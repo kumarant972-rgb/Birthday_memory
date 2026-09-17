@@ -1,4 +1,6 @@
-data/
 __pycache__/
-*.pyc
+*.py[cod]
 .venv/
+venv/
+.env
+data/secret_key.txt
