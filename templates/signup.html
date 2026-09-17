@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account — Birthday Memories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+    <div class="login-card">
+        <p class="eyebrow">Anybody can join</p>
+        <h1>Create Account</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" placeholder="e.g. Priya"
+                   value="{{ name }}" required autofocus>
+
+            <label for="login_id">Email ID or Phone number</label>
+            <input id="login_id" name="login_id" type="text" autocomplete="username"
+                   placeholder="you@example.com or 9876543210" value="{{ login_id }}" required>
+            <small>Your memories will be stored under this ID.</small>
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" minlength="6"
+                   autocomplete="new-password" placeholder="min 6 characters" required>
+
+            <button class="button full" type="submit">Create My Memory Space</button>
+        </form>
+
+        <p style="margin-top:18px;">Already have an account?
+            <a href="{{ url_for('login') }}" style="color:var(--pink);font-weight:bold;">Login</a>
+        </p>
+        <a class="back-link" href="{{ url_for('index') }}">← Back to website</a>
+    </div>
+</body>
+</html>

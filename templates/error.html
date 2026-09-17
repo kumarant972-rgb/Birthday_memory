@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error — Birthday Memories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+    <div class="login-card">
+        <p class="eyebrow">Oops</p>
+        <h1>{{ code }}</h1>
+        <p>{{ message }}</p>
+        <a class="button full" href="{{ url_for('index') }}">← Back to website</a>
+    </div>
+</body>
+</html>

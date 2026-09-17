@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Birthday Memories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="admin-header">
+    <div>
+        <p class="eyebrow">Signed in as {{ user_id }} • admin</p>
+        <h1>Admin Panel</h1>
+    </div>
+    <div class="actions">
+        <a class="button secondary" href="{{ url_for('my_memories') }}">My Memories</a>
+        <a class="button secondary" href="{{ url_for('index') }}">Home</a>
+        <a class="button danger" href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</header>
+
+<main class="container admin-main">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <!-- ================= MEMORY STORE ================= -->
+    <section class="admin-section">
+        <h2>🧠 Memory Store</h2>
+        <p class="section-hint">
+            All accounts and data files are stored permanently in the folder below.
+            Each movie belongs to the email ID / phone number that uploaded it.
+        </p>
+        <div class="stats-grid">
+            <div class="stat"><strong>{{ stats.human }}</strong><span>total memory used</span></div>
+            <div class="stat"><strong>{{ stats.files }}</strong><span>data files stored</span></div>
+            <div class="stat"><strong>{{ movies|length }}</strong><span>movies</span></div>
+            <div class="stat"><strong>{{ users|length }}</strong><span>accounts</span></div>
+        </div>
+        <p class="data-path">Data folder: <code>{{ data_dir }}</code></p>
+        <a class="button small secondary" href="{{ url_for('export_data') }}">⬇ Download backup (JSON)</a>
+    </section>
+
+    <!-- ================= ACCOUNTS ================= -->
+    <section class="admin-section">
+        <h2>🪪 Accounts (Email / Phone login IDs)</h2>
+        <p class="section-hint">
+            Anybody can sign up with their email ID or phone number. You can also create
+            accounts here. <strong>Users</strong> keep a private memory space;
+            <strong>admins</strong> manage everything.
+        </p>
+        <div class="upload-card">
+            <form class="inline-form" method="POST" action="{{ url_for('create_user') }}">
+                <div>
+                    <label for="new_name">Name</label>
+                    <input id="new_name" name="name" type="text" placeholder="e.g. Priya">
+                </div>
+                <div>
+                    <label for="new_login_id">Email ID or Phone</label>
+                    <input id="new_login_id" name="login_id" type="text"
+                           placeholder="you@example.com or 9876543210" required>
+                </div>
+                <div>
+                    <label for="new_password">Password</label>
+                    <input id="new_password" name="password" type="password"
+                           minlength="6" placeholder="min 6 characters" required>
+                </div>
+                <div>
+                    <label for="new_role">Role</label>
+                    <select id="new_role" name="role">
+                        <option value="user">User (private space)</option>
+                        <option value="admin">Admin (full access)</option>
+                    </select>
+                </div>
+                <button class="button" type="submit">Create Account</button>
+            </form>
+        </div>
+        <div class="admin-list">
+            {% for login, info in users.items() %}
+            <div class="admin-item">
+                <div>
+                    <span class="tag {% if info.role == 'admin' %}purple{% endif %}">{{ info.role }}</span>
+                    <span class="tag">{{ info.type }}</span>
+                    <h3>{{ info.name }}</h3>
+                    <p>🔑 {{ info.login }}<br>
+                       🎬 {{ movie_counts.get(login, 0) }} movie(s) • created {{ info.created }}</p>
+                </div>
+                {% if login != user_id %}
+                <form method="POST" action="{{ url_for('delete_user', login_id=login) }}"
+                      onsubmit="return confirm('Delete account {{ info.login }} and ALL of its stored files?');">
+                    <button class="button small danger" type="submit">Delete</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ================= ALL MOVIES ================= -->
+    <section class="admin-section">
+        <h2>📼 All Stored Movies</h2>
+        <p class="section-hint">Every movie in the memory store, with the email/phone it belongs to.</p>
+        {% if movies %}
+        <div class="admin-list">
+            {% for movie in movies %}
+            <div class="admin-item">
+                <div>
+                    <span class="tag">{{ movie.uploaded_at[:10] }}</span>
+                    <span class="tag purple">stored under {{ movie.owner }}</span>
+                    <h3>{{ movie.title }}</h3>
+                    <p>
+                        🎞 {{ movie.video }}
+                        {% if movie.song %}<br>🎵 {{ movie.song }}{% endif %}
+                        {% if movie.cover %}<br>🖼 {{ movie.cover }}{% endif %}
+                    </p>
+                </div>
+                <form method="POST" action="{{ url_for('delete_movie', movie_id=movie.id) }}"
+                      onsubmit="return confirm('Delete “{{ movie.title }}” and all of its files?');">
+                    <button class="button small danger" type="submit">Delete</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty"><p>No movies stored yet.</p></div>
+        {% endif %}
+    </section>
+
+    <!-- ================= CHANGE PASSWORD ================= -->
+    <section class="admin-section">
+        <h2>🔑 Change My Password</h2>
+        <div class="upload-card">
+            <form class="inline-form" method="POST" action="{{ url_for('change_password') }}">
+                <div>
+                    <label for="current_password">Current password</label>
+                    <input id="current_password" name="current_password" type="password" required>
+                </div>
+                <div>
+                    <label for="new_pw">New password</label>
+                    <input id="new_pw" name="new_password" type="password" minlength="6"
+                           placeholder="min 6 characters" required>
+                </div>
+                <button class="button" type="submit">Update Password</button>
+            </form>
+        </div>
+    </section>
+
+</main>
+
+<footer>Made with love • Birthday Memories</footer>
+</body>
+</html>

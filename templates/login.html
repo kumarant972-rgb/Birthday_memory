@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Birthday Memories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+    <div class="login-card">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Login</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+            <label for="login_id">Email ID or Phone number</label>
+            <input id="login_id" name="login_id" type="text" autocomplete="username"
+                   placeholder="you@example.com or 9876543210" required autofocus>
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password"
+                   autocomplete="current-password" required>
+
+            <button class="button full" type="submit">Login</button>
+        </form>
+
+        <p style="margin-top:18px;">New here?
+            <a href="{{ url_for('signup') }}" style="color:var(--pink);font-weight:bold;">Create an account</a>
+        </p>
+        <a class="back-link" href="{{ url_for('index') }}">← Back to website</a>
+    </div>
+</body>
+</html>

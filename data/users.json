@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "name": "Admin",
+    "login": "admin",
+    "type": "username",
+    "password_hash": "scrypt:32768:8:1$huhn2c15HYXyyyAA$6c4b7cc2277d084f3fb20c99dd07d1edd3be5e1e2275e12d69de9e9ef060864af313af685302a093824f4727981e29036c042276b86dd9903d56c3c1022ce9c4",
+    "role": "admin",
+    "created": "2026-09-17T21:20:22"
+  },
+  "6369253832": {
+    "name": "thirukumaran",
+    "login": "6369253832",
+    "type": "phone",
+    "password_hash": "scrypt:32768:8:1$HwEBcJ7cJgayb8GY$1c2f09282cc32915c711a52c67ecae5a0126d4d483f436c766ea247ccd63bd994e4c53ba54f49b7fca7a89d5ab12819f962004689ca91144b2ff7ec6dd0294c7",
+    "role": "user",
+    "created": "2026-09-17T21:21:49"
+  }
+}

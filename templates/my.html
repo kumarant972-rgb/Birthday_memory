@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Memories — Birthday Memories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="admin-header">
+    <div>
+        <p class="eyebrow">🎂 {{ user.name }} • stored under {{ user_id }}</p>
+        <h1>My Memories</h1>
+    </div>
+    <div class="actions">
+        <a class="button secondary" href="{{ url_for('index') }}">Home</a>
+        {% if user.role == 'admin' %}
+            <a class="button secondary" href="{{ url_for('admin_panel') }}">Admin Panel</a>
+        {% endif %}
+        <a class="button danger" href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</header>
+
+<main class="container admin-main">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <!-- memory used by THIS account -->
+    <div class="stats-grid" style="margin-bottom:40px;">
+        <div class="stat"><strong>{{ stats.human }}</strong><span>memory used by my movies</span></div>
+        <div class="stat"><strong>{{ stats.files }}</strong><span>data files stored</span></div>
+        <div class="stat"><strong>{{ movies|length }}</strong><span>movies</span></div>
+    </div>
+
+    <!-- ================= UPLOAD ================= -->
+    <section class="admin-section">
+        <h2>🎬 Upload a Birthday Movie</h2>
+        <p class="section-hint">Saved privately under <strong>{{ user_id }}</strong>.
+           Video is required; song and cover image are optional.</p>
+        <div class="upload-card">
+            <form method="POST" action="{{ url_for('upload_movie') }}" enctype="multipart/form-data">
+                <label for="title">Title</label>
+                <input id="title" name="title" type="text" placeholder="e.g. Amma's 60th Birthday" required>
+
+                <label for="note">Short note <small>(optional)</small></label>
+                <input id="note" name="note" type="text" placeholder="A few sweet words about this movie">
+
+                <label for="video">Movie video file *</label>
+                <input id="video" name="video" type="file" accept=".mp4,.webm,.mov,.mkv,.m4v" required>
+                <small>mp4, webm, mov, mkv — up to 1.5 GB</small>
+
+                <label for="song">Song file <small>(optional, plays together with the movie)</small></label>
+                <input id="song" name="song" type="file" accept=".mp3,.wav,.m4a,.aac,.ogg,.flac">
+
+                <label for="cover">Cover image <small>(optional)</small></label>
+                <input id="cover" name="cover" type="file" accept="image/*">
+
+                <button class="button full" type="submit">💾 Save to My Memory Store</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ================= MY MOVIES ================= -->
+    <section class="admin-section">
+        <h2>📼 My Movies</h2>
+        <p class="section-hint">Press the play button. If you added a song, use “Play Movie + Song”.</p>
+
+        {% if movies %}
+        <div class="movie-grid">
+            {% for movie in movies %}
+            <div class="movie-card">
+                {% if movie.cover %}
+                    <img class="cover" src="{{ url_for('media_file', filename=movie.cover) }}" alt="{{ movie.title }}">
+                {% else %}
+                    <div class="cover placeholder">🎂</div>
+                {% endif %}
+                <div class="movie-body">
+                    {% if movie.date_label %}<span class="tag">{{ movie.date_label }}</span>{% endif %}
+                    <h3>{{ movie.title }}</h3>
+                    {% if movie.note %}<p>{{ movie.note }}</p>{% endif %}
+                    <video class="movie" controls preload="metadata"
+                           src="{{ url_for('media_file', filename=movie.video) }}"></video>
+                    {% if movie.song %}
+                        <audio class="song" controls preload="none"
+                               src="{{ url_for('media_file', filename=movie.song) }}"></audio>
+                        <br>
+                        <button class="button small sync-button" type="button">▶ Play Movie + Song</button>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('delete_movie', movie_id=movie.id) }}"
+                          onsubmit="return confirm('Delete “{{ movie.title }}” and all of its files?');">
+                        <button class="button small danger" type="submit">🗑 Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">
+            <h3>No movies yet</h3>
+            <p>Upload your first birthday movie above — it will be stored under {{ user_id }}.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- ================= CHANGE PASSWORD ================= -->
+    <section class="admin-section">
+        <h2>🔑 Change My Password</h2>
+        <div class="upload-card">
+            <form class="inline-form" method="POST" action="{{ url_for('change_password') }}">
+                <div>
+                    <label for="current_password">Current password</label>
+                    <input id="current_password" name="current_password" type="password" required>
+                </div>
+                <div>
+                    <label for="new_pw">New password</label>
+                    <input id="new_pw" name="new_password" type="password" minlength="6"
+                           placeholder="min 6 characters" required>
+                </div>
+                <button class="button" type="submit">Update Password</button>
+            </form>
+        </div>
+    </section>
+
+</main>
+
+<footer>Made with love • Birthday Memories</footer>
+
+<script>
+document.querySelectorAll(".sync-button").forEach(function(button) {
+    button.addEventListener("click", function() {
+        const card = button.closest(".movie-card");
+        const video = card.querySelector("video");
+        const audio = card.querySelector("audio");
+        document.querySelectorAll("video").forEach(function(item) { if (item !== video) item.pause(); });
+        document.querySelectorAll("audio").forEach(function(item) { if (item !== audio) item.pause(); });
+        video.play();
+        if (audio) audio.play();
+    });
+});
+document.querySelectorAll(".movie").forEach(function(video) {
+    video.addEventListener("play", function() {
+        const audio = video.closest(".movie-card").querySelector("audio");
+        if (audio) audio.play().catch(function() {});
+    });
+    video.addEventListener("pause", function() {
+        const audio = video.closest(".movie-card").querySelector("audio");
+        if (audio) audio.pause();
+    });
+});
+</script>
+</body>
+</html>

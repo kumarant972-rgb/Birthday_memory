@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Memories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="hero">
+    <div class="hero-content">
+        <p class="eyebrow">A special collection of memories</p>
+        <h1>Happy Birthday <span>With Love</span></h1>
+        <p>Upload your birthday movies, play them any time, and keep every memory
+           safely stored under your own email ID or phone number.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}" style="max-width:520px;margin:0 auto 18px;">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        {% if user %}
+            <a class="button" href="{{ url_for('my_memories') }}">🎬 Open My Memories</a>
+            {% if user.role == 'admin' %}
+                <a class="admin-link" href="{{ url_for('admin_panel') }}">Admin Panel</a>
+            {% endif %}
+            <a class="admin-link" href="{{ url_for('logout') }}">Logout ({{ user.login }})</a>
+        {% else %}
+            <a class="button" href="{{ url_for('login') }}">Login</a>
+            <a class="button secondary" href="{{ url_for('signup') }}">Create Account</a>
+        {% endif %}
+    </div>
+</header>
+
+<main class="container">
+    <section class="heading" style="text-align:center;">
+        <p class="eyebrow">How it works</p>
+        <h2>Memories that stay with you</h2>
+    </section>
+
+    <div class="movie-grid">
+        <div class="movie-card"><div class="movie-body" style="text-align:center;">
+            <div style="font-size:3rem;">🪪</div>
+            <h3>1 · Login with anything</h3>
+            <p>Anybody can join. Use your <strong>email ID</strong> or your
+               <strong>phone number</strong> as your login ID, with a password.</p>
+        </div></div>
+        <div class="movie-card"><div class="movie-body" style="text-align:center;">
+            <div style="font-size:3rem;">🎬</div>
+            <h3>2 · Upload &amp; play</h3>
+            <p>Save full birthday movies (plus an optional song that plays together).
+               Press play and watch right on the website.</p>
+        </div></div>
+        <div class="movie-card"><div class="movie-body" style="text-align:center;">
+            <div style="font-size:3rem;">🧠</div>
+            <h3>3 · Stored under your ID</h3>
+            <p>Every video is kept in the memory store under <strong>your</strong>
+               email/phone — private to you, safe across restarts.</p>
+        </div></div>
+    </div>
+</main>
+
+<footer>Made with love • Birthday Memories</footer>
+</body>
+</html>
