@@ -1,0 +1,20 @@
+# Deploy config for Render.com
+# IMPORTANT: attach a persistent Disk so the memory store survives restarts.
+# In the Render dashboard: service -> Disks -> Mount Path = /opt/render/birthday-data
+services:
+  - type: web
+    name: web-birthday
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --timeout 300
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DATA_DIR
+        value: /opt/render/birthday-data   # persistent memory store location
+      - key: ADMIN_ID
+        sync: false                        # set these two secrets in the dashboard
+      - key: ADMIN_PASSWORD
+        sync: false
