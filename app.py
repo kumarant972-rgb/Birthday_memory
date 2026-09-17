@@ -298,8 +298,7 @@ def login():
         if user and check_password_hash(user["password_hash"], password):
             session["user_id"] = login_key
             flash(f"Welcome back, {user.get('name') or login_key}!", "success")
-            if user.get("role") == "admin":
-                return redirect(url_for("admin_panel"))
+            # Everybody lands on their memory videos right after login
             return redirect(url_for("my_memories"))
         flash("Wrong email/phone or password. New here? Create an account.", "error")
     return render_template("login.html")

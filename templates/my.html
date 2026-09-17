@@ -29,45 +29,12 @@
         {% endfor %}
     {% endwith %}
 
-    <!-- memory used by THIS account -->
-    <div class="stats-grid" style="margin-bottom:40px;">
-        <div class="stat"><strong>{{ stats.human }}</strong><span>memory used by my movies</span></div>
-        <div class="stat"><strong>{{ stats.files }}</strong><span>data files stored</span></div>
-        <div class="stat"><strong>{{ movies|length }}</strong><span>movies</span></div>
-    </div>
-
-    <!-- ================= UPLOAD ================= -->
-    <section class="admin-section">
-        <h2>🎬 Upload a Birthday Movie</h2>
-        <p class="section-hint">Saved privately under <strong>{{ user_id }}</strong>.
-           Video is required; song and cover image are optional.</p>
-        <div class="upload-card">
-            <form method="POST" action="{{ url_for('upload_movie') }}" enctype="multipart/form-data">
-                <label for="title">Title</label>
-                <input id="title" name="title" type="text" placeholder="e.g. Amma's 60th Birthday" required>
-
-                <label for="note">Short note <small>(optional)</small></label>
-                <input id="note" name="note" type="text" placeholder="A few sweet words about this movie">
-
-                <label for="video">Movie video file *</label>
-                <input id="video" name="video" type="file" accept=".mp4,.webm,.mov,.mkv,.m4v" required>
-                <small>mp4, webm, mov, mkv — up to 1.5 GB</small>
-
-                <label for="song">Song file <small>(optional, plays together with the movie)</small></label>
-                <input id="song" name="song" type="file" accept=".mp3,.wav,.m4a,.aac,.ogg,.flac">
-
-                <label for="cover">Cover image <small>(optional)</small></label>
-                <input id="cover" name="cover" type="file" accept="image/*">
-
-                <button class="button full" type="submit">💾 Save to My Memory Store</button>
-            </form>
-        </div>
-    </section>
-
-    <!-- ================= MY MOVIES ================= -->
-    <section class="admin-section">
-        <h2>📼 My Movies</h2>
-        <p class="section-hint">Press the play button. If you added a song, use “Play Movie + Song”.</p>
+    <!-- ================= MY MOVIES (shown first after login) ================= -->
+    <section class="admin-section" id="movies">
+        <h2>📼 My Memory Movies</h2>
+        <p class="section-hint">Stored under <strong>{{ user_id }}</strong> —
+           {{ stats.human }} used. Press the play button to watch.
+           If you added a song, use “Play Movie + Song”.</p>
 
         {% if movies %}
         <div class="movie-grid">
@@ -101,9 +68,37 @@
         {% else %}
         <div class="empty">
             <h3>No movies yet</h3>
-            <p>Upload your first birthday movie above — it will be stored under {{ user_id }}.</p>
+            <p>Upload your first birthday movie below — it will be stored under {{ user_id }}.</p>
         </div>
         {% endif %}
+    </section>
+
+    <!-- ================= UPLOAD ================= -->
+    <section class="admin-section">
+        <h2>🎬 Upload a New Memory</h2>
+        <p class="section-hint">Saved privately under <strong>{{ user_id }}</strong>.
+           Video is required; song and cover image are optional.</p>
+        <div class="upload-card">
+            <form method="POST" action="{{ url_for('upload_movie') }}" enctype="multipart/form-data">
+                <label for="title">Title</label>
+                <input id="title" name="title" type="text" placeholder="e.g. Amma's 60th Birthday" required>
+
+                <label for="note">Short note <small>(optional)</small></label>
+                <input id="note" name="note" type="text" placeholder="A few sweet words about this movie">
+
+                <label for="video">Movie video file *</label>
+                <input id="video" name="video" type="file" accept=".mp4,.webm,.mov,.mkv,.m4v" required>
+                <small>mp4, webm, mov, mkv — up to 1.5 GB</small>
+
+                <label for="song">Song file <small>(optional, plays together with the movie)</small></label>
+                <input id="song" name="song" type="file" accept=".mp3,.wav,.m4a,.aac,.ogg,.flac">
+
+                <label for="cover">Cover image <small>(optional)</small></label>
+                <input id="cover" name="cover" type="file" accept="image/*">
+
+                <button class="button full" type="submit">💾 Save to My Memory Store</button>
+            </form>
+        </div>
     </section>
 
     <!-- ================= CHANGE PASSWORD ================= -->
